@@ -17,6 +17,7 @@
     "@xyflow/react": "^12.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-player": "^2.16.0",
     "react-rnd": "^10.4.12",
     "reactflow": "^11.11.4"
   },

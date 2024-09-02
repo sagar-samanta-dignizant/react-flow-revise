@@ -12,6 +12,7 @@ import ResizableNode from './components/ResizableNode';
 import TableNode from './components/Data-node/TableNode';
 import Sidebar from './components/Sidebar';
 
+
 const nodeTypes = {
   ResizableNode,
   tableNode: TableNode,
@@ -22,20 +23,20 @@ const EDGES_STORAGE_KEY = 'react_flow_edges';
 const ACTIVE_NODES_STORAGE_KEY = 'active_nodes';
 
 const initialNodes = [
-  {
-    id: '1',
-    type: 'ResizableNode',
-    data: { label: 'NodeResizer', file: 'pdf-6.pdf' },
-    position: { x: 0, y: 50 },
-    style: {
-      width: 300,
-      height: 300,
-      background: '#fff',
-      border: '1px solid #ddd',
-      borderRadius: 15,
-      fontSize: 12,
-    },
-  },
+  // {
+  //   id: '1',
+  //   type: 'ResizableNode',
+  //   data: { label: 'NodeResizer', file: 'pdf-6.pdf' },
+  //   position: { x: 20, y: 20 },
+  //   style: {
+  //     width: 300,
+  //     height: 300,
+  //     background: '#fff',
+  //     border: '1px solid #ddd',
+  //     borderRadius: 15,
+  //     fontSize: 12,
+  //   },
+  // },
 ];
 
 const files = [
@@ -49,7 +50,7 @@ const files = [
   { label: 'Restaurant.ifc', value: 'Restaurant.wexbim' },
   { label: 'FourWalls.ifc', value: 'FourWalls.wexbim' },
   { label: 'heidentor.las', value: 'http://5.9.65.151/mschuetz/potree/resources/pointclouds/archpro/heidentor/cloud.js' },
-  { label: 'MLS_drive.las', value: 'http://5.9.65.151/mschuetz/potree/resources/pointclouds/helimap/360/MLS_drive1/cloud.js' }
+  { label: 'MLS_drive.las', value: 'http://5.9.65.151/mschuetz/potree/resources/pointclouds/helimap/360/MLS_drive1/cloud.js' },
 ]
   ;
 
@@ -57,7 +58,7 @@ export default function App() {
   const savedNodes = JSON.parse(localStorage.getItem(NODES_STORAGE_KEY)) || initialNodes;
   const savedEdges = JSON.parse(localStorage.getItem(EDGES_STORAGE_KEY)) || [];
   const savedActiveNodes = JSON.parse(localStorage.getItem(ACTIVE_NODES_STORAGE_KEY)) || [];
-
+  const [activeWorkModeNodeId, setActiveWorkModeNodeId] = useState(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(savedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(savedEdges);
   const [activeNodes, setActiveNodes] = useState(savedActiveNodes);
@@ -76,7 +77,6 @@ export default function App() {
     localStorage.setItem(ACTIVE_NODES_STORAGE_KEY, JSON.stringify(activeNodes));
   }, [activeNodes]);
 
-  // Function to add a new node
   const addNode = useCallback(() => {
     const newNode = {
       id: (nodes.length + 1).toString(),
@@ -100,6 +100,31 @@ export default function App() {
     });
   }, [nodes, setNodes]);
 
+  const onAddVideoPlayer = useCallback(() => {
+    const newNode = {
+      id: (nodes.length + 1).toString(),
+      type: 'ResizableNode',
+      data: { label: `New_Node_video_player${nodes.length + 1}`, file: 'demo.pdf' },
+      position: { x: 100, y: 300 },
+      style: {
+        width: 600,
+        height: 300,
+        background: '#fff',
+        border: '1px solid #ddd',
+        borderRadius: 15,
+        fontSize: 12,
+      },
+    };
+    console.log(newNode);
+    
+
+    setNodes((nds) => {
+      const updatedNodes = [...nds, newNode];
+      localStorage.setItem(NODES_STORAGE_KEY, JSON.stringify(updatedNodes));
+      return updatedNodes;
+    });
+  }, [nodes, setNodes]);
+
   // Function to add a new table node
   const addTableNode = useCallback(() => {
     const newNode = {
@@ -108,8 +133,8 @@ export default function App() {
       data: { label: `Table Node ${nodes.length + 1}` },
       position: { x: 100, y: 300 },
       style: {
-        width: 300,
-        height: 150,
+        width: 600,
+        height: 300,
         background: '#fff',
         border: '1px solid #ddd',
         borderRadius: 15,
@@ -126,16 +151,14 @@ export default function App() {
 
   // Function to handle PDF selection
   const handlePdfSelect = useCallback((file) => {
-    console.log(file);
-    
     const newNode = {
       id: (nodes.length + 1).toString(),
       type: 'ResizableNode',
       data: { label: file.label, file: file.value },
       position: { x: 100, y: 300 },
       style: {
-        width: 500,
-        height: 300,
+        width: 600,
+        height: 500,
         background: '#fff',
         border: '1px solid #ddd',
         borderRadius: 15,
@@ -193,7 +216,7 @@ export default function App() {
         onPdfSelect={handlePdfSelect}
         activeNodes={activeNodes}
         onContextMenu={handleContextMenu}
-        onAddNode={addNode}
+        onAddVideoPlayer={onAddVideoPlayer}
         onAddTableNode={addTableNode}
       />
       <div style={{ flexGrow: 1, position: 'relative' }}>

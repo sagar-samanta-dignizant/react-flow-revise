@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddNode, onAddTableNode }) => {
+const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPlayer, onAddTableNode }) => {
     // Function to check if a PDF file is active
     const isActive = (fileName) => activeNodes.includes(fileName);
     const getIcons = (file) => {
         const type = file.split(".")[1]
-        
+
         switch (type) {
             case "pdf":
 
@@ -22,8 +22,8 @@ const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddNode, on
     return (
         <div style={{ width: '250px', backgroundColor: '#f8f9fa', borderRight: '1px solid #ddd', height: '100%', position: 'relative' }}>
             <div style={{ padding: '10px', borderBottom: '1px solid #ddd', display: "flex", flexDirection: "column", gap: "5px" }}>
-                {/* <button
-                    onClick={onAddNode}
+                <button
+                    onClick={onAddVideoPlayer}
                     style={{
                         padding: '10px 20px',
                         marginRight: '10px',
@@ -40,8 +40,8 @@ const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddNode, on
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
                 >
-                    Load New Viewer
-                </button> */}
+                    Add Video Player
+                </button>
                 <button
                     onClick={onAddTableNode}
                     style={{

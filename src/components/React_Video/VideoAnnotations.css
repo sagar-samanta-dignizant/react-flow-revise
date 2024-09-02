@@ -1,0 +1,143 @@
+/* VideoAnnotations.css */
+
+.container {
+    display: flex;
+    box-sizing: border-box;
+    gap: 5px;
+    height: 100%;
+    flex: 2
+}
+
+.video-container {
+   width: 60%;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    /* Adds margin when wrapped */
+}
+
+.player-wrapper {
+    position: relative;
+    padding-top: 56.25%;
+    /* Maintains a 16:9 aspect ratio */
+    height: 100%;
+}
+
+.react-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.annotations-container {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.input-field,
+.url-input-field,
+.timestamp-input-field {
+    flex: 1;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.timestamp-input-field {
+    width: 160px;
+    /* Fixed width for the timestamp input */
+}
+
+.add-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+    background-color: #0056b3;
+}
+
+.annotations-list {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.annotation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.annotation-content {
+    display: flex;
+    align-items: center;
+}
+
+.timestamp-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    margin-right: 10px;
+    color: #007bff;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.timestamp-button:hover {
+    text-decoration: underline;
+}
+
+.delete-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #ff4d4f;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+    background-color: #e60000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        /* Stacks video and annotations vertically */
+    }
+
+    .video-container {
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+}

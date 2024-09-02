@@ -3,14 +3,17 @@ import { Handle, Position, NodeResizer, useReactFlow } from '@xyflow/react';
 import PdftronViewer from './pdftron/PdftronViewer';
 import IfcViewer from './wexbim/IfcViewer';
 import PotreeWrapper from './potree/PotreeWrapper';
+import VideoAnnotations from './React_Video/VideoAnnotations';
 
-const ResizableNode = ({ id, data, activeWorkModeNodeId, setActiveWorkModeNodeId }) => {
+const ResizableNode = ({ id, data }) => {
+
   const { setNodes, getNode } = useReactFlow();
-  const [mode, setMode] = useState('default'); // State to manage mode
+  const [mode, setMode] = useState('default');
+  const [previousStyle, setPreviousStyle] = useState(null);
 
   const onResize = useCallback(
     (event, { width, height }) => {
-      if (mode === 'default') { // Only resize in default mode
+      if (mode === 'default') {
         setNodes((nodes) =>
           nodes.map((node) =>
             node.id === id
@@ -33,9 +36,13 @@ const ResizableNode = ({ id, data, activeWorkModeNodeId, setActiveWorkModeNodeId
     let fileType = null;
     if (data.label.includes("las")) {
       fileType = "las";
+    } if (data.label.includes("video_player")) {
+      fileType = "video_player";
     } else {
       fileType = data.file.split(".")[1];
     }
+    console.log(fileType);
+
     switch (fileType) {
       case "pdf":
         return <PdftronViewer file={data.file} />;
@@ -45,39 +52,50 @@ const ResizableNode = ({ id, data, activeWorkModeNodeId, setActiveWorkModeNodeId
       case "las":
         const idValue = generateUniqueId();
         return <PotreeWrapper id={idValue} file={data.file} />;
+      case "video_player":
+        return <VideoAnnotations />
       default:
         return null;
     }
   }, [data.file, id, data.label]);
 
-  // Adjust container styles based on mode
   const containerStyles = {
-    height: mode === 'work' ? 'calc(100vh - 40px)' : 'calc(100% - 30px)', // Full height in work mode
+    height: mode === 'work' ? 'calc(100vh - 40px)' : 'calc(100% - 30px)',
     width: '100%',
     padding: "10px",
     overflow: 'auto',
-    pointerEvents: mode === 'work' ? 'none' : 'auto',
-    opacity: mode === 'work' ? 0.5 : 1,
   };
 
-  // Handle mode change
-  const handleModeChange = (newMode) => {
+  const handleModeChange = (event) => {
+    const newMode = event.target.value;
     if (newMode === 'work') {
-      setActiveWorkModeNodeId(id);
-    } else {
-      setActiveWorkModeNodeId(null);
+      // Save current style before changing to work mode
+      const node = getNode(id);
+      if (node) {
+        setPreviousStyle(node.style);
+        setNodes((nodes) =>
+          nodes.map((n) =>
+            n.id === id
+              ? { ...n, style: { ...n.style, width: '100%', height: 'calc(100vh - 40px)' } }
+              : n
+          )
+        );
+      }
+    } else if (newMode === 'default') {
+      // Restore previous style when switching back to default mode
+      setNodes((nodes) =>
+        nodes.map((n) =>
+          n.id === id && previousStyle
+            ? { ...n, style: previousStyle }
+            : n
+        )
+      );
     }
     setMode(newMode);
   };
 
   useEffect(() => {
-    // Revert node size if not active in work mode
-    if (mode === 'work' && activeWorkModeNodeId !== id) {
-      setMode('default');
-    }
-  }, [activeWorkModeNodeId, id, mode]);
-
-  useEffect(() => {
+    // Apply saved styles when switching to 'work' mode
     if (mode === 'work') {
       const node = getNode(id);
       if (node) {
@@ -94,20 +112,20 @@ const ResizableNode = ({ id, data, activeWorkModeNodeId, setActiveWorkModeNodeId
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px', height: '30px' }}>
-        <button onClick={() => handleModeChange('work')} style={{ marginRight: '5px' }}>Work Mode</button>
-        <button onClick={() => handleModeChange('default')}>Default Mode</button>
+      <div style={{ padding: '5px', height: '30px', zIndex: "100" }}>
+        <select onChange={handleModeChange} value={mode} style={{ padding: '5px', fontSize: '14px' }}>
+          <option value="default">Default Mode</option>
+          <option value="work">Work Mode</option>
+        </select>
       </div>
-      {mode === 'default' && (
-        <NodeResizer
-          minWidth={100}
-          minHeight={10}
-          onResize={onResize}
-          isResizable={true}
-          lineStyle={{ stroke: '#ddd' }}
-          handleStyle={{ fill: '#ddd' }}
-        />
-      )}
+      <NodeResizer
+        minWidth={100}
+        minHeight={10}
+        onResize={onResize}
+        isResizable={true}
+        lineStyle={{ stroke: '#ddd' }}
+        handleStyle={{ fill: '#ddd' }}
+      />
       <div style={containerStyles}>
         {renderItem}
       </div>
@@ -115,8 +133,6 @@ const ResizableNode = ({ id, data, activeWorkModeNodeId, setActiveWorkModeNodeId
     </>
   );
 };
-
-// Use a custom comparison function for React.memo
 export default memo(ResizableNode, (prevProps, nextProps) => {
   return prevProps.id === nextProps.id && prevProps.data.file === nextProps.data.file;
 });
