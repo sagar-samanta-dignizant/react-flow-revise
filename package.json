@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@pdftron/webviewer": "^10.11.1",
+    "@xbim/viewer": "^2.1.0-pre202408301041",
     "@xyflow/react": "^12.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-rnd": "^10.4.12",
     "reactflow": "^11.11.4"
   },
   "devDependencies": {

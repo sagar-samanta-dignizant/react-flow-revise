@@ -1,0 +1,36 @@
+.resizable-node-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .mode-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    height: 30px;
+  }
+  
+  .mode-button {
+    flex: 1;
+    margin: 0 2px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    font-size: 14px;
+  }
+  
+  .mode-button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  
+  .mode-button:hover {
+    background-color: #e2e6ea;
+  }
+  
