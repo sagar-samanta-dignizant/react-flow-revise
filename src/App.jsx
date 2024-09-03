@@ -62,8 +62,33 @@ export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(savedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(savedEdges);
   const [activeNodes, setActiveNodes] = useState(savedActiveNodes);
-
-  const onConnect = (params) => setEdges((eds) => addEdge(params, eds));
+  const [selectedNodes, setSelectedNodes] = useState([]);
+  // const onConnect = (params) => setEdges((eds) => addEdge(params, eds));
+  const onConnect = useCallback(
+    (params) => {
+      const label = `Edge from ${params.source} to ${params.target}`; // Example of dynamic label generation
+      
+      if (selectedNodes.length > 1 && params.target) {
+        const newEdges = selectedNodes.map((node) => ({
+          id: `e${node.id}-${params.target}`,
+          source: node.id,
+          target: params.target,
+          label: `Edge from ${node.id} to ${params.target}`, // Dynamic label
+          labelStyle: { fontSize: 12 }, // Optional: Customize label style
+        }));
+        setEdges((eds) => [...eds, ...newEdges]);
+      } else {
+        setEdges((eds) =>
+          addEdge(
+            { ...params, label, labelStyle: { fontSize: 12 } }, // Dynamic label
+            eds
+          )
+        );
+      }
+    },
+    [selectedNodes, setEdges]
+  );
+  
 
   useEffect(() => {
     localStorage.setItem(NODES_STORAGE_KEY, JSON.stringify(nodes));
@@ -72,6 +97,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(EDGES_STORAGE_KEY, JSON.stringify(edges));
   }, [edges]);
+console.log(selectedNodes);
 
   useEffect(() => {
     localStorage.setItem(ACTIVE_NODES_STORAGE_KEY, JSON.stringify(activeNodes));
@@ -133,7 +159,7 @@ export default function App() {
       data: { label: `Table Node ${nodes.length + 1}` },
       position: { x: 100, y: 300 },
       style: {
-        width: 600,
+        width: 300,
         height: 300,
         background: '#fff',
         border: '1px solid #ddd',
@@ -157,8 +183,8 @@ export default function App() {
       data: { label: file.label, file: file.value },
       position: { x: 100, y: 300 },
       style: {
-        width: 600,
-        height: 500,
+        width: 300,
+        height: 300,
         background: '#fff',
         border: '1px solid #ddd',
         borderRadius: 15,
@@ -208,7 +234,19 @@ export default function App() {
     }
   }, [handleNodeDelete]);
 
-
+  const onSelectionChange = useCallback((elements) => {
+    const selectedNodes = elements?.nodes || [];
+    setSelectedNodes(selectedNodes);
+  }, []);
+  const styledNodes = nodes.map((node) => ({
+    ...node,
+    style: {
+      ...node.style,
+      border: selectedNodes.some((n) => n.id === node.id)
+        ? '2px solid green'  // Border color for selected nodes
+        : '1px solid #ddd', // Default border color
+    },
+  }));
   return (
     <div style={{ height: '100vh', width: '100vw', display: 'flex' }}>
       <Sidebar
@@ -221,7 +259,7 @@ export default function App() {
       />
       <div style={{ flexGrow: 1, position: 'relative' }}>
         <ReactFlow
-          nodes={nodes}
+          nodes={styledNodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
@@ -233,6 +271,7 @@ export default function App() {
           nodeTypes={nodeTypes}
           fitViewOptions={{ padding: 0.2 }}
           style={{ width: '100%', height: '100%' }}
+          onSelectionChange={onSelectionChange}
         >
           <Background />
           <Controls />

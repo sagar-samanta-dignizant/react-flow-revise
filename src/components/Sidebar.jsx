@@ -40,7 +40,7 @@ const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPla
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
                 >
-                    Add Video Player
+                    Load Video Player
                 </button>
                 <button
                     onClick={onAddTableNode}
@@ -59,7 +59,7 @@ const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPla
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#218838'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#28a745'}
                 >
-                    Add Data Table
+                    Load Data Table
                 </button>
             </div>
             <div style={{ padding: '10px' }}>
