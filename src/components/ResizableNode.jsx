@@ -36,12 +36,11 @@ const ResizableNode = ({ id, data }) => {
     let fileType = null;
     if (data.label.includes("las")) {
       fileType = "las";
-    } if (data.label.includes("video_player")) {
+    } else if (data.label.includes("video_player")) {
       fileType = "video_player";
     } else {
       fileType = data.file.split(".")[1];
     }
-    console.log(fileType);
 
     switch (fileType) {
       case "pdf":
