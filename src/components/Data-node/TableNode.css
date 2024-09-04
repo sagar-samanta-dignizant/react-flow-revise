@@ -1,0 +1,63 @@
+.table-node-container {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .table-scroll-container {
+    height: calc(100% - 40px); /* Adjust height to account for header */
+    overflow: auto;
+  }
+  
+  .table-node-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  
+  .table-node-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .table-node-table th, .table-node-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .table-node-table th {
+    position: relative;
+  }
+  
+  .header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-select, .filter-input {
+    margin-top: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .filter-select {
+    width: auto;
+  }
+  
+  .table-node-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .table-node-table tbody tr:hover {
+    background-color: #e9ecef;
+  }
+  

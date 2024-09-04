@@ -1,8 +1,25 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 import { Handle, Position, NodeResizer, useReactFlow } from '@xyflow/react';
+import './TableNode.css'; // Import the CSS file for styling
+import { useAnnotations } from '../../contextAPI/AppContext';
 
 const TableNode = ({ id, data }) => {
   const { setNodes } = useReactFlow();
+  const { getAllConnectedNodes } = useAnnotations();
+  const [statusFilter, setStatusFilter] = useState('');
+  const [subjectFilter, setSubjectFilter] = useState('');
+  const [heightFilter, setHeightFilter] = useState('');
+  const annotations = getAllConnectedNodes(id);
+
+
+  // Filter annotations based on the filters
+  const filteredAnnotations = annotations.filter((annotation) => {
+    return (
+      (statusFilter === '' || annotation.status === statusFilter.toLowerCase()) &&
+      (subjectFilter === '' || annotation.subject.toLowerCase().includes(subjectFilter.toLowerCase())) &&
+      (heightFilter === '' || annotation.height === parseInt(heightFilter, 10))
+    );
+  });
 
   // Callback to handle resizing
   const onResize = useCallback(
@@ -19,7 +36,7 @@ const TableNode = ({ id, data }) => {
   );
 
   return (
-    <div style={{ width: '100%', height: '100%', padding: '10px', boxSizing: 'border-box' }}>
+    <div className="table-node-container">
       <NodeResizer
         minWidth={200}
         minHeight={150}
@@ -29,29 +46,61 @@ const TableNode = ({ id, data }) => {
         handleStyle={{ fill: '#ddd' }}
       />
       <Handle type="target" position={Position.Left} />
-      <div style={{ height: '100%', overflow: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
+      <div className="table-scroll-container">
+        <table className="table-node-table">
+          <thead>
             <tr>
-              <th style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Status</th>
-              <th style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Segment</th>
-              <th style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Phase</th>
-              <th style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Amount</th>
+              <th>
+                <div className="header-content">
+                  <span>Status</span>
+                  <select
+                    className="filter-select"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <option value="">All</option>
+                    <option value="Completed">Completed</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Pending">Pending</option>
+                  </select>
+                </div>
+              </th>
+              <th>
+                <div className="header-content">
+                  <span>Subject</span>
+                  <input
+                    className="filter-input"
+                    type="text"
+                    value={subjectFilter}
+                    onChange={(e) => setSubjectFilter(e.target.value)}
+                    placeholder="Filter by subject"
+                  />
+                </div>
+              </th>
+              <th>
+                <div className="header-content">
+                  <span>Height</span>
+                  <input
+                    className="filter-input"
+                    type="number"
+                    value={heightFilter}
+                    onChange={(e) => setHeightFilter(e.target.value)}
+                    placeholder="Filter by height"
+                  />
+                </div>
+              </th>
+              <th>Nr-Tag</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Completed</td>
-              <td style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Marketing</td>
-              <td style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Phase 1</td>
-              <td style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>$1,000</td>
-            </tr>
-            <tr>
-              <td style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>In Progress</td>
-              <td style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Development</td>
-              <td style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>Phase 2</td>
-              <td style={{ padding: '10px', borderBottom: '1px solid #dee2e6' }}>$2,500</td>
-            </tr>
+            {filteredAnnotations.map((annotation) => (
+              <tr key={annotation.id}>
+                <td>{annotation.status}</td>
+                <td>{annotation.subject}</td>
+                <td>{annotation.height}</td>
+                <td>{annotation.nrTag}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

@@ -80,14 +80,15 @@ export default function App() {
           id: `e${node.id}-${params.target}`,
           source: node.id,
           target: params.target,
+          animated: true,
           label: `Edge from ${node.id} to ${params.target}`, // Dynamic label
           labelStyle: { fontSize: 12 }, // Optional: Customize label style
         }));
-        setEdges((eds) => [...eds, ...newEdges]);
+        setEdges((eds) => [...eds, ...newEdges,]);
       } else {
         setEdges((eds) =>
           addEdge(
-            { ...params, label, labelStyle: { fontSize: 12 } }, // Dynamic label
+            { ...params, animated: true, label, labelStyle: { fontSize: 12 } }, // Dynamic label
             eds
           )
         );

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import WebViewer from '@pdftron/webviewer';
 import { useAnnotations } from '../../contextAPI/AppContext';
 
-const PdftronViewer = ({ file, nodeId }) => {
+const PdftronViewer = ({ file, id }) => {
   const viewerContainerRef = useRef(null);
   const instanceRef = useRef(null);
   const { addAnnotation, setSelectedAnnotation, clearSelectedAnnotations } = useAnnotations();
@@ -47,8 +47,9 @@ const PdftronViewer = ({ file, nodeId }) => {
                     status: generateRandomStatus(),
                     color: 'blue',
                     height: 1,
+                    viewerId: id
                   };
-                  addAnnotation(nodeId, annotationData);
+                  addAnnotation(annotationData);
                 });
               }
             });
@@ -65,6 +66,7 @@ const PdftronViewer = ({ file, nodeId }) => {
                     status: generateRandomStatus(),
                     color: 'blue',
                     height: 1,
+                    viewerId: id
                   };
                   setSelectedAnnotation(annotationData);
                 });
@@ -88,7 +90,7 @@ const PdftronViewer = ({ file, nodeId }) => {
     return () => {
 
     };
-  }, [file, nodeId, addAnnotation]); // Dependencies
+  }, [file, id, addAnnotation]); // Dependencies
 
   return (
     <div

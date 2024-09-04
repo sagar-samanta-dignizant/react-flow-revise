@@ -45,7 +45,7 @@ const ResizableNode = ({ id, data }) => {
 
     switch (fileType) {
       case "pdf":
-        return <PdftronViewer file={data.file} />;
+        return <PdftronViewer file={data.file} id={id} />;
       case "wexbim":
         const path = `/files/${data.file}`;
         return <IfcViewer modelPath={path} id={id} />;
