@@ -4,10 +4,11 @@ import PdftronViewer from './pdftron/PdftronViewer';
 import IfcViewer from './wexbim/IfcViewer';
 import PotreeWrapper from './potree/PotreeWrapper';
 import VideoAnnotations from './React_Video/VideoAnnotations';
+import { useFullScreen } from '../contextAPI/AppContext';
 
 const ResizableNode = ({ id, data }) => {
-
   const { setNodes, getNode } = useReactFlow();
+  const { isFullScreen, handleToggleFullScreen } = useFullScreen();
   const [mode, setMode] = useState('default');
   const [previousStyle, setPreviousStyle] = useState(null);
 
@@ -52,7 +53,7 @@ const ResizableNode = ({ id, data }) => {
         const idValue = generateUniqueId();
         return <PotreeWrapper id={idValue} file={data.file} />;
       case "video_player":
-        return <VideoAnnotations />
+        return <VideoAnnotations />; // Assuming VideoAnnotations is where you need full-screen functionality
       default:
         return null;
     }
@@ -111,11 +112,12 @@ const ResizableNode = ({ id, data }) => {
 
   return (
     <>
-      <div style={{ padding: '5px', height: '30px', zIndex: "100" }}>
+      <div style={{ padding: '5px', height: '30px', zIndex: "100", }}>
         <select onChange={handleModeChange} value={mode} style={{ padding: '5px', fontSize: '14px' }}>
           <option value="default">Default Mode</option>
-          <option value="work">Work Mode</option>
+          <option value="work">Focus Mode</option> {/* Ensure onClick correctly triggers function */}
         </select>
+        <button onClick={() => handleToggleFullScreen(data)} style={{ border: "1px solid gray", marginLeft: "5px" }}>Full Screen</button>
       </div>
       <NodeResizer
         minWidth={100}

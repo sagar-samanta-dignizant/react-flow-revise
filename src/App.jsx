@@ -11,6 +11,10 @@ import '@xyflow/react/dist/style.css';
 import ResizableNode from './components/ResizableNode';
 import TableNode from './components/Data-node/TableNode';
 import Sidebar from './components/Sidebar';
+import LargePotreeView from './components/FullScreenViewer/potree_viewer/LargePotreeView';
+import LargeIfcView from './components/FullScreenViewer/bim_viewer/LargeIfcView';
+import LargePdftronViewer from './components/FullScreenViewer/pdftron_webviewer/LargePdftronViewer';
+import { useFullScreen } from './contextAPI/AppContext';
 
 
 const nodeTypes = {
@@ -58,16 +62,17 @@ export default function App() {
   const savedNodes = JSON.parse(localStorage.getItem(NODES_STORAGE_KEY)) || initialNodes;
   const savedEdges = JSON.parse(localStorage.getItem(EDGES_STORAGE_KEY)) || [];
   const savedActiveNodes = JSON.parse(localStorage.getItem(ACTIVE_NODES_STORAGE_KEY)) || [];
-  const [activeWorkModeNodeId, setActiveWorkModeNodeId] = useState(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(savedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(savedEdges);
   const [activeNodes, setActiveNodes] = useState(savedActiveNodes);
   const [selectedNodes, setSelectedNodes] = useState([]);
+  const { isFullScreen, handleToggleFullScreen } = useFullScreen();
+
   // const onConnect = (params) => setEdges((eds) => addEdge(params, eds));
   const onConnect = useCallback(
     (params) => {
       const label = `Edge from ${params.source} to ${params.target}`; // Example of dynamic label generation
-      
+
       if (selectedNodes.length > 1 && params.target) {
         const newEdges = selectedNodes.map((node) => ({
           id: `e${node.id}-${params.target}`,
@@ -88,7 +93,7 @@ export default function App() {
     },
     [selectedNodes, setEdges]
   );
-  
+
 
   useEffect(() => {
     localStorage.setItem(NODES_STORAGE_KEY, JSON.stringify(nodes));
@@ -97,34 +102,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem(EDGES_STORAGE_KEY, JSON.stringify(edges));
   }, [edges]);
-console.log(selectedNodes);
 
   useEffect(() => {
     localStorage.setItem(ACTIVE_NODES_STORAGE_KEY, JSON.stringify(activeNodes));
   }, [activeNodes]);
-
-  const addNode = useCallback(() => {
-    const newNode = {
-      id: (nodes.length + 1).toString(),
-      type: 'ResizableNode',
-      data: { label: `New Node ${nodes.length + 1}`, file: 'demo.pdf' },
-      position: { x: 100, y: 300 },
-      style: {
-        width: 300,
-        height: 300,
-        background: '#fff',
-        border: '1px solid #ddd',
-        borderRadius: 15,
-        fontSize: 12,
-      },
-    };
-
-    setNodes((nds) => {
-      const updatedNodes = [...nds, newNode];
-      localStorage.setItem(NODES_STORAGE_KEY, JSON.stringify(updatedNodes));
-      return updatedNodes;
-    });
-  }, [nodes, setNodes]);
 
   const onAddVideoPlayer = useCallback(() => {
     const newNode = {
@@ -141,9 +122,6 @@ console.log(selectedNodes);
         fontSize: 12,
       },
     };
-    console.log(newNode);
-    
-
     setNodes((nds) => {
       const updatedNodes = [...nds, newNode];
       localStorage.setItem(NODES_STORAGE_KEY, JSON.stringify(updatedNodes));
@@ -247,36 +225,73 @@ console.log(selectedNodes);
         : '1px solid #ddd', // Default border color
     },
   }));
+  const generateUniqueId = () => {
+    const randomPart = Math.random().toString(36).substring(2, 10);
+    const timestampPart = Date.now().toString(36);
+    return randomPart + timestampPart;
+  };
+  const getRenderItem = () => {
+    const { data, fileType } = isFullScreen
+    const idValue = generateUniqueId();
+    switch (fileType) {
+      case "pdf":
+        return <LargePdftronViewer file={data.file} />;
+      case "wexbim":
+        const path = `/files/${data.file}`;
+        return <LargeIfcView modelPath={path} id={idValue} />;
+      case "las":
+        return <LargePotreeView id={idValue} file={data.file} />;
+      case "video_player":
+        return <></>
+      // return <VideoAnnotations />; // Assuming VideoAnnotations is where you need full-screen functionality
+      default:
+        return <>NOT FOUND</>;
+    }
+  }
+
   return (
     <div style={{ height: '100vh', width: '100vw', display: 'flex' }}>
-      <Sidebar
-        files={files}
-        onPdfSelect={handlePdfSelect}
-        activeNodes={activeNodes}
-        onContextMenu={handleContextMenu}
-        onAddVideoPlayer={onAddVideoPlayer}
-        onAddTableNode={addTableNode}
-      />
-      <div style={{ flexGrow: 1, position: 'relative' }}>
-        <ReactFlow
-          nodes={styledNodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          className="react-flow-node-resizer-example"
-          minZoom={0.2}
-          maxZoom={4}
-          defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-          nodeTypes={nodeTypes}
-          fitViewOptions={{ padding: 0.2 }}
-          style={{ width: '100%', height: '100%' }}
-          onSelectionChange={onSelectionChange}
-        >
-          <Background />
-          <Controls />
-        </ReactFlow>
-      </div>
+      {isFullScreen.data ? (
+        <div style={{ width: "100vw", height: "100vh", display: "flex", gap: "10px" }}>
+          <div style={{ width: '100%', boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }}>
+            <div>
+              <button onClick={() => handleToggleFullScreen({ fileType: null, data: null })}>back</button>
+            </div>
+            {getRenderItem()}
+          </div>
+        </div>
+      ) : (
+        <>
+          <Sidebar
+            files={files}
+            onPdfSelect={handlePdfSelect}
+            activeNodes={activeNodes}
+            onContextMenu={handleContextMenu}
+            onAddVideoPlayer={onAddVideoPlayer}
+            onAddTableNode={addTableNode}
+          />
+          <div style={{ flexGrow: 1, position: 'relative' }}>
+            <ReactFlow
+              nodes={styledNodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              className="react-flow-node-resizer-example"
+              minZoom={0.2}
+              maxZoom={4}              
+              defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+              nodeTypes={nodeTypes}
+              fitViewOptions={{ padding: 0.2 }}
+              style={{ width: '100%', height: '100%' }}
+              onSelectionChange={onSelectionChange}
+            >
+              <Background />
+              <Controls />
+            </ReactFlow>
+          </div>
+        </>
+      )}
     </div>
   );
 }
