@@ -162,7 +162,7 @@ export default function App() {
       data: { label: `Tree Node ${nodes.length + 1}` },
       position: { x: 100, y: 300 },
       style: {
-        width: 150,
+        width: 200,
         height: 600,
         background: '#fff',
         border: '1px solid #ddd',

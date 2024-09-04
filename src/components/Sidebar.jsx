@@ -67,7 +67,7 @@ const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPla
                         padding: '10px 20px',
                         border: 'none',
                         borderRadius: '5px',
-                        backgroundColor: '#84a744',
+                        backgroundColor: 'rgb(33 63 50)',
                         color: '#fff',
                         cursor: 'pointer',
                         fontSize: '16px',
@@ -75,10 +75,10 @@ const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPla
                         transition: 'background-color 0.3s',
                         width: '100%'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#218838'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#28a745'}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(33 63 20)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(33 63 30)'}
                 >
-                    Load Tree Data
+                    Show Tree List
                 </button>
             </div>
             <div style={{ padding: '10px' }}>

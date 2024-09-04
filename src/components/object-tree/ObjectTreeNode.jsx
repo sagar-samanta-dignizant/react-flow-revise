@@ -12,7 +12,7 @@ const ObjectTreeNode = ({ id }) => {
 
   return (
     <div className="object-tree-node-container">
-      <h4 className="object-tree-node-title">Object List</h4>
+      <h4 className="object-tree-node-title">Tree List</h4>
       <ul className="object-tree-node-list">
         {annotations.map((annotation) => (
           <li
