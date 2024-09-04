@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPlayer, onAddTableNode }) => {
+const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPlayer, onAddTableNode, addTreeViewNode }) => {
     // Function to check if a PDF file is active
     const isActive = (fileName) => activeNodes.includes(fileName);
     const getIcons = (file) => {
@@ -60,6 +60,25 @@ const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPla
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#28a745'}
                 >
                     Load Data Table
+                </button>
+                <button
+                    onClick={addTreeViewNode}
+                    style={{
+                        padding: '10px 20px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        backgroundColor: '#84a744',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                        transition: 'background-color 0.3s',
+                        width: '100%'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#218838'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#28a745'}
+                >
+                    Load Tree Data
                 </button>
             </div>
             <div style={{ padding: '10px' }}>

@@ -15,11 +15,13 @@ import LargePotreeView from './components/FullScreenViewer/potree_viewer/LargePo
 import LargeIfcView from './components/FullScreenViewer/bim_viewer/LargeIfcView';
 import LargePdftronViewer from './components/FullScreenViewer/pdftron_webviewer/LargePdftronViewer';
 import { useFullScreen } from './contextAPI/AppContext';
+import ObjectTreeNode from './components/object-tree/ObjectTreeNode';
 
 
 const nodeTypes = {
   ResizableNode,
   tableNode: TableNode,
+  objectTreeNode: ObjectTreeNode
 };
 
 const NODES_STORAGE_KEY = 'react_flow_nodes';
@@ -152,6 +154,29 @@ export default function App() {
       return updatedNodes;
     });
   }, [nodes, setNodes]);
+  const addTreeViewNode = useCallback(() => {
+    const newNode = {
+      id: (nodes.length + 1).toString(),
+      type: 'objectTreeNode',
+      data: { label: `Tree Node ${nodes.length + 1}` },
+      position: { x: 100, y: 300 },
+      style: {
+        width: 150,
+        height: 600,
+        background: '#fff',
+        border: '1px solid #ddd',
+        borderRadius: 15,
+        fontSize: 12,
+      },
+    };
+
+    setNodes((nds) => {
+      const updatedNodes = [...nds, newNode];
+      localStorage.setItem(NODES_STORAGE_KEY, JSON.stringify(updatedNodes));
+      return updatedNodes;
+    });
+  }, [nodes, setNodes]);
+
 
   // Function to handle PDF selection
   const handlePdfSelect = useCallback((file) => {
@@ -269,6 +294,7 @@ export default function App() {
             onContextMenu={handleContextMenu}
             onAddVideoPlayer={onAddVideoPlayer}
             onAddTableNode={addTableNode}
+            addTreeViewNode={addTreeViewNode}
           />
           <div style={{ flexGrow: 1, position: 'relative' }}>
             <ReactFlow
@@ -279,7 +305,7 @@ export default function App() {
               onConnect={onConnect}
               className="react-flow-node-resizer-example"
               minZoom={0.2}
-              maxZoom={4}              
+              maxZoom={4}
               defaultViewport={{ x: 0, y: 0, zoom: 1 }}
               nodeTypes={nodeTypes}
               fitViewOptions={{ padding: 0.2 }}
