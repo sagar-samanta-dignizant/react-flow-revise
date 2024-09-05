@@ -5,6 +5,7 @@ import IfcViewer from './wexbim/IfcViewer';
 import PotreeWrapper from './potree/PotreeWrapper';
 import VideoAnnotations from './React_Video/VideoAnnotations';
 import { useFullScreen } from '../contextAPI/AppContext';
+import WebSiteViewer from './WebSiteViewer/WebSiteViewer';
 
 const ResizableNode = ({ id, data }) => {
   const { setNodes, getNode } = useReactFlow();
@@ -39,6 +40,8 @@ const ResizableNode = ({ id, data }) => {
       fileType = "las";
     } else if (data.label.includes("video_player")) {
       fileType = "video_player";
+    } else if (data.label.includes("web_page")) {
+      fileType = "web_page";
     } else {
       fileType = data.file.split(".")[1];
     }
@@ -46,6 +49,8 @@ const ResizableNode = ({ id, data }) => {
     switch (fileType) {
       case "pdf":
         return <PdftronViewer file={data.file} id={id} />;
+      case "web_page":
+        return <WebSiteViewer id={id} />;
       case "wexbim":
         const path = `/files/${data.file}`;
         return <IfcViewer modelPath={path} id={id} />;

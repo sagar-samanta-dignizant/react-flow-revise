@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPlayer, onAddTableNode, addTreeViewNode }) => {
+const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPlayer, onAddTableNode,onAddWebPageViewer, addTreeViewNode }) => {
     // Function to check if a PDF file is active
     const isActive = (fileName) => activeNodes.includes(fileName);
     const getIcons = (file) => {
@@ -75,10 +75,29 @@ const Sidebar = ({ files, onPdfSelect, activeNodes, onContextMenu, onAddVideoPla
                         transition: 'background-color 0.3s',
                         width: '100%'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(33 63 20)'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(33 63 30)'}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(10 63 20)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(20 63 30)'}
                 >
                     Show Tree List
+                </button>
+                <button
+                    onClick={onAddWebPageViewer}
+                    style={{
+                        padding: '10px 20px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        backgroundColor: 'rgb(201 115 140)',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                        transition: 'background-color 0.3s',
+                        width: '100%'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(150 115 140)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(170 115 140)'}
+                >
+                   Load Web page
                 </button>
             </div>
             <div style={{ padding: '10px' }}>

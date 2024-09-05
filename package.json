@@ -15,6 +15,7 @@
     "@pdftron/webviewer": "^10.11.1",
     "@xbim/viewer": "^2.1.0-pre202408301041",
     "@xyflow/react": "^12.2.0",
+    "axios": "^1.7.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-player": "^2.16.0",

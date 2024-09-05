@@ -14,7 +14,7 @@ import Sidebar from './components/Sidebar';
 import LargePotreeView from './components/FullScreenViewer/potree_viewer/LargePotreeView';
 import LargeIfcView from './components/FullScreenViewer/bim_viewer/LargeIfcView';
 import LargePdftronViewer from './components/FullScreenViewer/pdftron_webviewer/LargePdftronViewer';
-import { useFullScreen } from './contextAPI/AppContext';
+import { useAnnotations, useFullScreen } from './contextAPI/AppContext';
 import ObjectTreeNode from './components/object-tree/ObjectTreeNode';
 
 
@@ -69,33 +69,72 @@ export default function App() {
   const [activeNodes, setActiveNodes] = useState(savedActiveNodes);
   const [selectedNodes, setSelectedNodes] = useState([]);
   const { isFullScreen, handleToggleFullScreen } = useFullScreen();
+  const { getSelectedObject } = useAnnotations();
 
-  // const onConnect = (params) => setEdges((eds) => addEdge(params, eds));
   const onConnect = useCallback(
     (params) => {
-      const label = `Edge from ${params.source} to ${params.target}`; // Example of dynamic label generation
+      const counts = countAnnotationsByViewerId(getSelectedObject());
 
-      if (selectedNodes.length > 1 && params.target) {
-        const newEdges = selectedNodes.map((node) => ({
+      const newEdges = selectedNodes.length > 1 && params.target
+        ? selectedNodes.map((node) => ({
           id: `e${node.id}-${params.target}`,
           source: node.id,
           target: params.target,
           animated: true,
-          label: `Edge from ${node.id} to ${params.target}`, // Dynamic label
-          labelStyle: { fontSize: 12 }, // Optional: Customize label style
-        }));
-        setEdges((eds) => [...eds, ...newEdges,]);
-      } else {
-        setEdges((eds) =>
-          addEdge(
-            { ...params, animated: true, label, labelStyle: { fontSize: 12 } }, // Dynamic label
-            eds
-          )
-        );
-      }
+          label: `${counts[node.id] || 0}`,
+          labelBgPadding: [8, 4],
+          labelBgBorderRadius: 4,
+          labelBgStyle: { fill: '#FFCC00', color: '#fff', fontWeight: 700, height: "20px" },
+          deletable: true
+        }))
+        : [{
+          ...params,
+          animated: true,
+          label: `${counts[params.source] || 0}`,
+          labelBgPadding: [8, 4],
+          labelBgBorderRadius: 4,
+          labelBgStyle: { fill: '#FFCC00', color: '#fff', fontWeight: 700, height: "20px" },
+          deletable: true
+        }];
+      setEdges((eds) => [...eds, ...newEdges]);
+
     },
-    [selectedNodes, setEdges]
+    [selectedNodes, setEdges, getSelectedObject]
   );
+
+
+  const countAnnotationsByViewerId = (annotations) => {
+    const countMap = {};
+
+    annotations.forEach(({ viewerId }) => {
+      if (!countMap[viewerId]) {
+        countMap[viewerId] = 0;
+      }
+      countMap[viewerId] += 1;
+    });
+
+    return countMap;
+  };
+
+  useEffect(() => {
+    const selectedObject = getSelectedObject();
+    const counts = countAnnotationsByViewerId(selectedObject);
+
+    const updatedEdges = edges.map((edge) => {
+      const count = counts[edge.source] || 0;
+      return {
+        ...edge,
+        label: `${count}`,
+      };
+    });
+
+    // Only update edges if there are existing edges
+    if (edges.length > 0) {
+      setEdges(updatedEdges);
+    }
+  }, [getSelectedObject]);
+
+
 
 
   useEffect(() => {
@@ -115,6 +154,28 @@ export default function App() {
       id: (nodes.length + 1).toString(),
       type: 'ResizableNode',
       data: { label: `New_Node_video_player${nodes.length + 1}`, file: 'demo.pdf' },
+      position: { x: 100, y: 300 },
+      style: {
+        width: 600,
+        height: 300,
+        background: '#fff',
+        border: '1px solid #ddd',
+        borderRadius: 15,
+        fontSize: 12,
+      },
+    };
+    setNodes((nds) => {
+      const updatedNodes = [...nds, newNode];
+      localStorage.setItem(NODES_STORAGE_KEY, JSON.stringify(updatedNodes));
+      return updatedNodes;
+    });
+  }, [nodes, setNodes]);
+
+  const onAddWebPageViewer = useCallback(() => {
+    const newNode = {
+      id: (nodes.length + 1).toString(),
+      type: 'ResizableNode',
+      data: { label: `New_Node_web_page${nodes.length + 1}`, file: 'demo.pdf' },
       position: { x: 100, y: 300 },
       style: {
         width: 600,
@@ -296,6 +357,7 @@ export default function App() {
             onAddVideoPlayer={onAddVideoPlayer}
             onAddTableNode={addTableNode}
             addTreeViewNode={addTreeViewNode}
+            onAddWebPageViewer={onAddWebPageViewer}
           />
           <div style={{ flexGrow: 1, position: 'relative' }}>
             <ReactFlow
