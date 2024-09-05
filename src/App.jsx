@@ -74,9 +74,8 @@ export default function App() {
   const onConnect = useCallback(
     (params) => {
       const counts = countAnnotationsByViewerId(getSelectedObject());
-
-      const newEdges = selectedNodes.length > 1 && params.target
-        ? selectedNodes.map((node) => ({
+      if (selectedNodes.length > 1 && params.target) {
+        const newEdges = selectedNodes.map((node) => ({
           id: `e${node.id}-${params.target}`,
           source: node.id,
           target: params.target,
@@ -85,19 +84,26 @@ export default function App() {
           labelBgPadding: [8, 4],
           labelBgBorderRadius: 4,
           labelBgStyle: { fill: '#FFCC00', color: '#fff', fontWeight: 700, height: "20px" },
-          deletable: true
+          deletable: true,
         }))
-        : [{
-          ...params,
-          animated: true,
-          label: `${counts[params.source] || 0}`,
-          labelBgPadding: [8, 4],
-          labelBgBorderRadius: 4,
-          labelBgStyle: { fill: '#FFCC00', color: '#fff', fontWeight: 700, height: "20px" },
-          deletable: true
-        }];
-      setEdges((eds) => [...eds, ...newEdges]);
-
+        setEdges((eds) => [...eds, ...newEdges]);
+      } else {
+        setEdges((eds) =>
+          addEdge(
+            {
+              ...params,
+              label: `${counts[params.source] || 0}`,
+              labelBgPadding: [8, 4],
+              labelBgBorderRadius: 4,
+              labelBgStyle: { fill: '#FFCC00', color: '#fff', fontWeight: 700, height: "20px" },
+              deletable: true,
+              labelStyle: { fontSize: 12 },
+              animated: true
+            },
+            eds
+          )
+        );
+      }
     },
     [selectedNodes, setEdges, getSelectedObject]
   );
